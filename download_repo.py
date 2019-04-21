@@ -83,10 +83,10 @@ class DownloadRepo:
                     enter_dir_cmd = "cd " + folder_path
                     git_pull_cmd = "git pull"
                     git_history_cmd = "git --no-pager log -p > " + history_filename
-                    check_pull_command = drive_letter + " & " + enter_dir_cmd + " & " + git_pull_cmd
+                    check_pull_command = drive_letter + " && " + enter_dir_cmd + " && " + git_pull_cmd
                     check_pull_result = os.popen(check_pull_command).read()
                     if check_pull_result != "Already up to date.\n":
-                        full_command = drive_letter + " & " + enter_dir_cmd + " & " + git_pull_cmd + " & " + git_history_cmd
+                        full_command = drive_letter + " && " + enter_dir_cmd + " && " + git_pull_cmd + " && " + git_history_cmd
                         os.system(full_command)
                 if not os.path.exists(folder_path):
                     os.system(clone)
@@ -96,7 +96,7 @@ class DownloadRepo:
                         drive_letter = "true"
                     enter_dir_cmd = "cd " + folder_path
                     git_history_cmd = "git --no-pager log -p > " + history_filename
-                    full_command = drive_letter + " & " + enter_dir_cmd + " & " + git_history_cmd
+                    full_command = drive_letter + " && " + enter_dir_cmd + " && " + git_history_cmd
                     os.system(full_command)
                 if not os.path.isfile(git_ignore_filename):
                     git_file = open(git_ignore_filename, 'w')
