@@ -72,3 +72,6 @@ https://dev.mysql.com/downloads/workbench/
 
 # GitMAD options are found in the main.py file:
 ![GitMAD Help](https://github.com/deepdivesec/GitMAD/blob/master/GitMAD-install/gitmad-help.PNG)
+
+## Additional Ubuntu install gifs available here:
+https://github.com/deepdivesec/GitMAD/tree/master/GitMAD-install
