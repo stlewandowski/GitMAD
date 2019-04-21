@@ -6,7 +6,6 @@ itsdangerous
 Jinja2
 MarkupSafe
 prettytable
-pycparser ##left out first run
 PyMySQL
 SQLAlchemy
 Werkzeug
