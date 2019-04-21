@@ -197,19 +197,7 @@ class DbOps:
                  r_res.c.match_commit_message,
                  r_info.c.repo_description]).select_from(join_obj).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
 
-        #stmt_content = [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type, r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type, r_res.c.match_commit_message, r_info.c.repo_description]).select_from(join_obj) + where_clause + .limit(post_dict['num_res']
-        #stmt = select(
-        #    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-        #     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type, r_res.c.match_commit_message,
-        #     r_info.c.repo_description]).select_from(join_obj).limit(post_dict['num_res'])
-        #stmt = select(stmt_content)
         res = cnxn.execute(stmt)
-
-
-
-
-
-        #x = db.DbOps(db_u, db_p, db_h, db_db)
 
         return res, num_results, stmt
 
