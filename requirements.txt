@@ -1,19 +1,12 @@
-asn1crypto
-certifi
 cffi
-chardet
 Click
 cryptography
 Flask
-idna
 itsdangerous
 Jinja2
 MarkupSafe
 prettytable
-pycparser
+pycparser ##left out first run
 PyMySQL
-requests
-six
 SQLAlchemy
-urllib3
 Werkzeug
