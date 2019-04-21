@@ -12,6 +12,26 @@ GitMAD searches Github for a keyword or domain. The user can also configure the 
 
 GitMAD takes the results from above and searches the Git history of the repository. The history is searched for a set of configurable regular expressions. GitMAD can also break up each line of a history file and search this for matches in Shannon entropy.
 
+### There are two configurable files:
+
+#### regex_matches.py
+This is the location to put keywords and regular expressions to search within the content of a repository, just add a dictionary to the list below:
+
+```python
+to_match = [
+    {'match_regex': r'password', 'match_type': 'Password Match'},
+    {'match_regex': r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}', 'match_type': 'IP Match'},
+    {'match_regex': r'username', 'match_type': 'Username Match'},
+    {'match_regex': r'\b[\w.]*@[\w]*\.[\w.]*\b', 'match_type': 'Email Match'}
+    ]
+```
+
+#### entropy_whitelist.py
+This is the location to remove items the Entropy feature is matching that you do not want.  Just add a dictionary to the list below:
+
+```python
+r_whitelist = [{'regex':r'\b[A-Za-z][a-z]+([A-Z][a-z]*)+\b'}] # Camel Case
+```
 
 ## Output
 
@@ -26,8 +46,11 @@ GitMAD was originally written in Python3.6 on Windows.  It has also been tested 
 
 ## Software Requirements
 Python3
+
 Pip for Python3
+
 Git
+
 MySQL 8.0
 
 For MySQL 8.0 on Windows, you should be able to download from the Oracle Website.
@@ -62,8 +85,9 @@ mysql> source /<path-to-gitmad>/GitMAD/github_search_db.sql
 
 ### 4) Run main.py and on first run enter configuration information:
 ```
-python3 /<path-to-gitmad>/GitMAD/main.py
+python3 /<path-to-gitmad>/GitMAD/main.py -q <keyword-to-search> [see other options below]
 ```
+![GitMAD Help](https://github.com/deepdivesec/GitMAD/blob/master/GitMAD-install/gitmad-help.PNG)
 
 ### 5) Run web application:
 ```
@@ -73,8 +97,9 @@ python3 /<path-to-gitmad>/GitMAD/web_home.py
 ### 6) (Optional) Download and install MySQL Workbench to directly interact with results:
 https://dev.mysql.com/downloads/workbench/
 
-# GitMAD options are found in the main.py file:
-![GitMAD Help](https://github.com/deepdivesec/GitMAD/blob/master/GitMAD-install/gitmad-help.PNG)
 
 ## Additional Ubuntu install gifs available here:
 https://github.com/deepdivesec/GitMAD/tree/master/GitMAD-install
+
+# Known Issues
+* Sometimes the Github API will return 0 for the size of a repository, regardless of its size.  This has not yet been handled and results in repoistories larger than the -mx/--max-size being cloned and processed.  This issue is being addressed.
