@@ -17,6 +17,9 @@ GitMAD takes the results from above and searches the Git history of the reposito
 
 GitMAD takes the results above and inserts them into a database which contains information on the file the match was found, as well as information about the repository. It also inserts the string that was matched and the line of the match. These results are available via an email alert, in the database, and via the web application.
 
+## Current Status
+*This project is in active development*
+
 # Install
 
 GitMAD was originally written in Python3.6 on Windows.  It has also been tested on Ubuntu 18.04.
