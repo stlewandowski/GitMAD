@@ -127,5 +127,5 @@ Run Web Application:
 NOTE:
 This is in active development and should be considered in an Alpha stage.
 
-This was first built on Windows, but it will get ported to Linux.
+This was first built on Windows on Python3.
 
