@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+
 import math
 from collections import Counter
 import re
