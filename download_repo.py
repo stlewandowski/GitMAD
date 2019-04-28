@@ -8,12 +8,13 @@ import conf
 
 class DownloadRepo:
 
-    def __init__(self, results, max_repo_size, username, password):
+    def __init__(self, results, max_repo_size, username, password, proxy):
 
         self.results_dict = results
         self.max_size = max_repo_size
         self.user = username
         self.pw = password
+        self.pxy = proxy
 
     def check_repo_size(self):
         full_name_set = set()
@@ -26,7 +27,11 @@ class DownloadRepo:
 
         for item in full_name_list:
             full_url = size_url + item
-            r = requests.get(full_url, auth=(self.user, self.pw))
+            if self.pxy != 'n':
+                pxy_dict = {'https': self.pxy}
+                r = requests.get(full_url, auth=(self.user, self.pw), proxies=pxy_dict, verify=False)
+            else:
+                r = requests.get(full_url, auth=(self.user, self.pw))
             ri_list = []
             if r.status_code == 200:
                 get_json = r.json()
@@ -68,7 +73,7 @@ class DownloadRepo:
             repo_name = str(key).split('/')[1]
             folder_name = str(key).replace('/', '-')
 
-            if input_dict[key][0] <= maximum:
+            if input_dict[key][0] <= maximum and input_dict[key][0] != 0:
                 html_url = "https://github.com/" + key
                 git_url = html_url + ".git"
                 clone = "git clone " + git_url + " " + folder_name
@@ -82,12 +87,21 @@ class DownloadRepo:
                         drive_letter = 'true'
                     enter_dir_cmd = "cd " + folder_path
                     git_pull_cmd = "git pull"
+                    git_reset = "git reset --hard"
                     git_history_cmd = "git --no-pager log -p > " + history_filename
-                    check_pull_command = drive_letter + " && " + enter_dir_cmd + " && " + git_pull_cmd
+                    check_pull_command = drive_letter + " && " + enter_dir_cmd + " && " + git_reset + " && " + git_pull_cmd
                     check_pull_result = os.popen(check_pull_command).read()
                     if check_pull_result != "Already up to date.\n":
-                        full_command = drive_letter + " && " + enter_dir_cmd + " && " + git_pull_cmd + " && " + git_history_cmd
+                        full_command = drive_letter + " && " + enter_dir_cmd + " && " + git_reset + " && " + git_pull_cmd + " && " + git_history_cmd
                         os.system(full_command)
+                    git_file = open(git_ignore_filename, 'r')
+                    ignore_text = git_file.read()
+                    git_file.close()
+                    ignore_list = ignore_text.split('\n')
+                    if history_filename not in ignore_list:
+                        git_file = open(git_ignore_filename, 'a')
+                        git_file.write("\n" + history_filename)
+                    git_file.close()
                 if not os.path.exists(folder_path):
                     os.system(clone)
                     if directory[0:1] != '/':

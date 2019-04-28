@@ -19,7 +19,7 @@ class RunProgram:
     def __init__(self, query, email, logging, res_per_pull, max_repo_size, ent, entropy_amt=4):
         c = conf.Configure()
         conf_file, file_check = c.check_for_file(c.c_filename)
-        db_u, db_p, db_h, db_db, g_u, g_p, d = c.populate_credentials(conf_file, file_check)
+        pxy, db_u, db_p, db_h, db_db, g_u, g_p, d = c.populate_credentials(conf_file, file_check)
         if email == 1:
             e_conf_file, e_file_check = c.check_for_file(c.e_filename)
             e_from, e_to, e_domain, e_port, e_pw = c.populate_email_credentials(e_conf_file, e_file_check)
@@ -27,6 +27,7 @@ class RunProgram:
         if logging == 1:
             # configure logging
             print("placeholder")
+        self.proxy = pxy
         self.directory = d
         self.user = g_u
         self.pw = g_p
@@ -46,9 +47,9 @@ class RunProgram:
             self.do_ent = 'no entropy'
 
     def main_first(self):
-        git_search = gs.GithubSearch(self.query, self.user, self.pw, self.directory)
+        git_search = gs.GithubSearch(self.query, self.user, self.pw, self.directory, self.proxy)
         search_results = git_search.search_github(100, 'initial')
-        repo_check = dr.DownloadRepo(search_results, self.max_size, self.user, self.pw)
+        repo_check = dr.DownloadRepo(search_results, self.max_size, self.user, self.pw, self.proxy)
         get_repo_info = repo_check.check_repo_size()
         all_repo_dict, dl_repo_list = repo_check.download_repo(get_repo_info, self.directory)
         search_repos = ds.DirectorySearch(self.query, self.directory, dl_repo_list, all_repo_dict, self.db_user,
@@ -57,9 +58,9 @@ class RunProgram:
         search_repos.iterate_thru_repos()
 
     def main_continuous(self):
-        git_search = gs.GithubSearch(self.query, self.user, self.pw, self.directory)
+        git_search = gs.GithubSearch(self.query, self.user, self.pw, self.directory, self.proxy)
         search_results = git_search.search_github(self.rpp)
-        repo_check = dr.DownloadRepo(search_results, self.max_size, self.user, self.pw)
+        repo_check = dr.DownloadRepo(search_results, self.max_size, self.user, self.pw, self.proxy)
         get_repo_info = repo_check.check_repo_size()
         all_repo_dict, dl_repo_list = repo_check.download_repo(get_repo_info, self.directory)
         search_repos = ds.DirectorySearch(self.query, self.directory, dl_repo_list, all_repo_dict, self.db_user,
@@ -67,13 +68,17 @@ class RunProgram:
                                           self.do_ent, self.ent_size)  # , "no_git")
         search_repos.iterate_thru_repos()
         # TODO Chaining of filters together in WebApp
+        # TODO Add sortable tables in WebApp
         # TODO Enhance entropy whitelist
-        # TODO Make this proxy aware...
+        # TODO Make this proxy aware... -- DONE
         # TODO Add log output from results (in addition to email)
         # TODO Add logging.
         # TODO Add error handling.
         # TODO API
         # TODO AdHoc download of a repo
+        # TODO Address issue of 0 size from -- DONE (0 not being DL'd - 0 is usually a larger repo)
+        # TODO Add ability to download a repo on-demand from web app.
+
 
 
 if __name__ == "__main__":

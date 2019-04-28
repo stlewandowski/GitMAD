@@ -91,7 +91,8 @@ class Configure:
                          {'Value': config['Database']['Database'], 'Section': 'Database', 'Section_Value': 'Database'},
                          {'Value': config['Github']['G_user'], 'Section': 'Github', 'Section_Value': 'G_user'},
                          {'Value': config['Github']['G_password'], 'Section': 'Github', 'Section_Value': 'G_password'},
-                         {'Value': config['Directory']['Path'], 'Section': 'Directory', 'Section_Value': 'Path'}]
+                         {'Value': config['Directory']['Path'], 'Section': 'Directory', 'Section_Value': 'Path'},
+                         {'Value': config['Proxy']['Host-Port'], 'Section': 'Directory', 'Section_Value': 'Host-Port'}]
 
             for item in conf_list:
                 if item['Value'] == '':
@@ -108,6 +109,7 @@ class Configure:
             git_user = config['Github']['G_user']
             git_pw = config['Github']['G_password']
             directory = config['Directory']['Path']
+            proxy = config['Proxy']['Host-Port']
         except Exception as e:
             print(e)
             db_user = input('Enter database user:')
@@ -117,6 +119,7 @@ class Configure:
             git_user = input('Enter Github username:')
             git_pw = getpass.getpass('Enter Github password:')  # input('Enter Github password:')
             directory = input('Enter working [data] directory:')
+            proxy = input('Enter proxy host:port (127.0.0.1:3128).  Enter \'n\' for no proxy.')
             config['Database'] = {'User': db_user,
                                   'Password': db_password,
                                   'Host': db_host,
@@ -124,11 +127,12 @@ class Configure:
             config['Github'] = {'G_user': git_user,
                                 'G_password': git_pw}
             config['Directory'] = {'Path': directory}
+            config['Proxy'] = {'Host-Port': proxy}
 
             with open(file_path, 'w') as configfile:
                 config.write(configfile)
             configfile.close()
-        return db_user, db_password, db_host, db_database, git_user, git_pw, directory
+        return proxy, db_user, db_password, db_host, db_database, git_user, git_pw, directory
 
 
 if __name__ == "__main__":

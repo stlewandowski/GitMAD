@@ -123,9 +123,41 @@ class DbOps:
         # search for a repo match
         print("testing")
 
-    def display_repos(self):
+    def display_repos(self, post_dict):
         # display list of repos, based on some constraint (time)
-        print("testing")
+        cnxn, enxn = self.create_conn()
+        r_info = self.get_table('repo_info', enxn)
+
+        if post_dict['r_user'] != '':
+            stmt = select([r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+             r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
+             r_info.c.repo_description, r_info.c.repo_last_checked,
+             r_info.c.repo_latest_commit]).where(r_info.c.repo_user == post_dict['r_user']).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+
+        elif post_dict['r_cloned'] != '' and post_dict['r_cloned'] != 'Any':
+            stmt = select([r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+             r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
+             r_info.c.repo_description, r_info.c.repo_last_checked,
+             r_info.c.repo_latest_commit]).where(r_info.c.repo_cloned == post_dict['r_cloned']).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+
+        elif post_dict['r_desc'] != '':
+            r_d = post_dict['r_desc']
+            stmt = select([r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+             r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
+             r_info.c.repo_description, r_info.c.repo_last_checked,
+             r_info.c.repo_latest_commit]).where(r_info.c.repo_description.like(f'%{r_d}%')).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+
+        else:
+            stmt = select(
+                [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+                 r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
+                 r_info.c.repo_description, r_info.c.repo_last_checked,
+                 r_info.c.repo_latest_commit]).order_by(desc(r_info.c.repo_last_checked)).limit(
+                post_dict['num_res'])
+
+        res = cnxn.execute(stmt)
+
+        return res
 
     def display_match_results(self, num_results, post_dict = {}):
         cnxn, enxn = self.create_conn()
@@ -158,6 +190,13 @@ class DbOps:
                      r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
                      r_res.c.match_commit_message,
                      r_info.c.repo_description]).select_from(join_obj).where(r_info.c.repo_name == post_dict['r_name']).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
+            elif post_dict['m_type'] != '' and post_dict['m_type'] != 'Any':
+                #where_clause += ".where(r_info.c.repo_name == " + post_dict['r_name'] + ")"
+                stmt = select(
+                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
+                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
+                     r_res.c.match_commit_message,
+                     r_info.c.repo_description]).select_from(join_obj).where(r_res.c.match_type == post_dict['m_type']).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
             elif post_dict['m_string'] != '':
                 m_s = post_dict['m_string']
                 #where_clause += ".where(r_res.c.match_string.like('%" + post_dict['m_string'] + "%'))"

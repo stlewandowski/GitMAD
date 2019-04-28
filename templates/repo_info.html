@@ -5,10 +5,6 @@ GitMAD
 {% endblock %}
 
 {% block content %}
-{% for key in p_dict %}
-{{ key }}
-{{ p_dict[key] }}
-{% endfor %}
 <form method="POST">
     <table id="web_monitor">
         <tr>
@@ -23,12 +19,8 @@ GitMAD
             <td><input name="repo_user" type="text"></td>
         </tr>
         <tr>
-            <td>Repo Name:</td>
-            <td><input name="repo_name" type="text"></td>
-        </tr>
-        <tr>
-            <td>Match Type:</td>
-            <td><select name="match_type">
+            <td>Repo Cloned:</td>
+            <td><select name="is_cloned">
                 <option value="Any">Any</option>
                 {% for item in select_opt %}
                 <option value="{{ item }}" >{{ item }}</option>
@@ -36,17 +28,14 @@ GitMAD
             </select></td>
         </tr>
         <tr>
-            <td>In Match String:</td>
-            <td><input name="match_string" type="text"></td>
+            <td>In Repo Description:</td>
+            <td><input name="repo_description" type="text"></td>
         </tr>
         <tr>
-            <td>In Match Line:</td>
-            <td><input name="match_line" type="text"></td>
+            <td>Repo Last Checked (eg. 2018-06-12T19:30):</td>
+            <td><input name="repo_checked" type="datetime-local"></td>
         </tr>
-        <tr>
-            <td>In Match Location:</td>
-            <td><input name="location" type="location"></td>
-        </tr>
+
 
 
         <tr>
@@ -55,47 +44,37 @@ GitMAD
          </tr>
     </table>
 </form>
-<h2>The 'Match Type' filter is presently not available.</h2>
+<h2>The 'Repo Last Checked' filter is presently not available.</h2>
 <h2>In addition, the above filters cannot yet be chained together</h2>
 <br/>
-<h1>New Results:</h1>
-<p>Number of recent results shown:</p>
-<p>{{num_results}}</p>
-<!-- <p>Query:</p>
-<p>{{ query }}</p> -->
 <table id="web_monitor2">
     <thead>
         <tr>
             <th>Repo User</th>
             <th>Repo Name</th>
-            <th>Time Inserted</th>
-            <th>Match Type</th>
-            <th>Match String</th>
-            <th>Match Line</th>
-            <th>Location</th>
-            {# <th>Commit Add/Del</th> #}
-            <th>Commit Message</th>
+            <th>Repo ID</th>
+            <th>Repo Owner ID</th>
+            <th>Repo Last Checked</th>
+            <th>Repo Size (MB)</th>
+            <th>Repo Cloned</th>
             <th>Repo Description</th>
+
         </tr>
     </thead>
     {% for result in results %}
         <tr>
-            <td>{{ result[0] }}</td>
-            <td>{{ result[1] }}</td>
             <td>{{ result[2] }}</td>
             <td>{{ result[3] }}</td>
-            <td>{{ result[4][:64] }}</td>
+            <td>{{ result[0] }}</td>
+            <td>{{ result[1] }}</td>
+            <td>{{ result[7] }}</td>
+            <td>{{ result[4] / 100 }}</td>
             <td>{{ result[5] }}</td>
             <td>{{ result[6] }}</td>
-            {# <td>{{ result[7] }}</td> #}
-            <td>{{ result[8] }}</td>
-            <td>{{ result[9] }}</td>
+
         </tr>
     {% endfor %}
 </table>
-
-
-
 {% endblock %}
 
 {% block sidebar %}
