@@ -15,17 +15,6 @@ class Configure:
         file = os.path.join(self.path, self.c_filename)
         config = configparser.ConfigParser()
         config.read(file)
-        try:
-            self.db_pw = config['Database']['Password']
-            self.db_user = config['Database']['User']
-            self.db_host = config['Database']['Host']
-            self.db_db = config['Database']['Database']
-            self.g_user = config['Github']['G_user']
-            self.g_pw = config['Github']['G_password']
-            self.working_dir = config['Directory']['Path']
-        except Exception as e:
-            print('Variables not found.  Populating...')
-            pass
 
     def check_for_file(self, fname):
         file = os.path.join(self.path, fname)
