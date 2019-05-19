@@ -6,6 +6,7 @@ import getpass
 
 
 class Configure:
+    """Class to set up configuration files, both for the main program as well as for email alerts."""
     def __init__(self):
         abs_path = os.path.abspath(__file__)
         path_dir, fname = os.path.split(abs_path)
@@ -17,6 +18,7 @@ class Configure:
         config.read(file)
 
     def check_for_file(self, fname):
+        """Determine whether a configuration file exists, if not create it."""
         file = os.path.join(self.path, fname)
         if not os.path.isfile(file):
             open(file, 'w').close()
@@ -27,6 +29,7 @@ class Configure:
         return file, present
 
     def populate_email_credentials(self, file_path, is_present):
+        """Check to see whether email configuration is present.  If not populate it."""
         config = configparser.ConfigParser()
         config.read(file_path)
         try:
@@ -71,6 +74,7 @@ class Configure:
         return e_from, e_to, e_domain, e_port, e_pw
 
     def populate_credentials(self, file_path, is_present):
+        """Check to see whether main configuration is present.  If not populate it."""
         config = configparser.ConfigParser()
         config.read(file_path)
         try:
