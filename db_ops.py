@@ -15,6 +15,7 @@ import json
 import os
 
 class DbOps:
+    """Class that contains database queries and inserts for the program."""
     def __init__(self, username, password, host, database):
         self.user = username
         self.pw = password
@@ -22,6 +23,7 @@ class DbOps:
         self.db = database
 
     def create_conn(self):
+        """Connect to database."""
         usr = self.user
         pw = self.pw
         host = self.host
@@ -32,6 +34,7 @@ class DbOps:
         return conn, engine
 
     def get_table(self, table_name, engine):
+        """Get table metadata."""
         meta = MetaData(engine)
         meta.reflect()
         table = Table(table_name, meta, autoload=True)
@@ -41,6 +44,7 @@ class DbOps:
         print("testing")
 
     def get_recent_hash(self, r_id):
+        """Get the hash of the most recent commit."""
         cnxn, enxn = self.create_conn()
         result = ''
         tbl = self.get_table('repo_info', enxn)
@@ -56,6 +60,7 @@ class DbOps:
 
 
     def update_repo_info(self, in_list, commit_hash):
+        """Update repo_info table with repository metadata."""
         cnxn, enxn = self.create_conn()
         ins = self.get_table('repo_info', enxn).insert()
         upd_table = self.get_table('repo_info', enxn)
@@ -79,6 +84,7 @@ class DbOps:
                                       repo_cloned=in_list[10]).where(upd_table.c.repo_id==in_list[7])
 
     def update_repo_search_results(self, in_list_repo, in_list_matches, search_type):
+        """Update repo_search_results table with keyword/regex matches."""
         cnxn, enxn = self.create_conn()
         ins = self.get_table('repo_search_results', enxn).insert()
         upd = self.get_table('repo_search_results', enxn).update()
@@ -124,6 +130,7 @@ class DbOps:
         print("testing")
 
     def display_repos(self, post_dict):
+        """Query and display repo info based on filtering items in web app."""
         # display list of repos, based on some constraint (time)
         cnxn, enxn = self.create_conn()
         r_info = self.get_table('repo_info', enxn)
@@ -160,6 +167,7 @@ class DbOps:
         return res
 
     def display_match_results(self, num_results, post_dict = {}):
+        """Query and display repo search results based on filtering items in web app."""
         cnxn, enxn = self.create_conn()
         #r_s_r = self.get_table('repo_search_results', enxn)
         #select_st = select([r_s_r]).order_by(desc(r_s_r.c.match_inserted)).limit(500)
@@ -242,6 +250,7 @@ class DbOps:
         return res, num_results, stmt
 
     def truncate(self, in_line, max_len):
+        """Truncate line."""
         if in_line is not None:
             if len(in_line) > max_len:
                 return in_line[:max_len-1]
@@ -249,6 +258,7 @@ class DbOps:
                 return in_line
 
     def r_truncate(self, in_line, max_len):
+        """Truncate line - from the left side."""
         if in_line is not None:
             if len(in_line) > max_len:
                 return in_line[max_len-1:]
