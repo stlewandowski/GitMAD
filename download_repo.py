@@ -7,9 +7,9 @@ import time # for testing of the repo dict (can remove)
 import conf
 
 class DownloadRepo:
-
+    """Class to download repositories if they meet a certain criteria."""
     def __init__(self, results, max_repo_size, username, password, proxy):
-
+        """Initialize class with proper variables."""
         self.results_dict = results
         self.max_size = max_repo_size
         self.user = username
@@ -17,6 +17,7 @@ class DownloadRepo:
         self.pxy = proxy
 
     def check_repo_size(self):
+        """Check the size of a repository, and create a list of results if not over the max size."""
         full_name_set = set()
         repo_size_dict = {}
 
@@ -65,6 +66,7 @@ class DownloadRepo:
         # NOTE the size is returned in KBs.  5657210 from api == 5.65 gb when cloned.
 
     def download_repo(self, input_dict, directory):
+        """Take results from check_repo_size() function and clone or update the repo."""
         os.chdir(directory)
         maximum = self.max_size * 100
         cloned_list = []
