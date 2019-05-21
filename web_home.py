@@ -20,15 +20,18 @@ app = Flask(__name__)
 @app.route('/')
 @app.route('/index')
 def index():
+    """Index page."""
     return render_template('index.html')
 
 
 @app.route('/search')
 def search():
+    """Search page."""
     return render_template('search.html')
 
 @app.route('/repo_info')
 def repo_info():
+    """Initial repo_info page, showing various metadata for each repository."""
     post_dict = {'num_res': 100, 'r_user': '', 'r_name': '',
                  'r_cloned': '', 'r_desc': '', 'r_checked': ''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
@@ -38,6 +41,7 @@ def repo_info():
 
 @app.route('/repo_info', methods=['POST'])
 def repo_info_upd():
+    """Updated repo_info page, to handle filtering."""
     num_res = request.form['num_results']
     r_user = request.form['repo_user']
     r_cloned = request.form['is_cloned']
@@ -52,6 +56,7 @@ def repo_info_upd():
 
 @app.route('/monitor')
 def mon():
+    """Initial monitor page, showing GitMAD search results."""
     post_dict = {'num_res':100, 'r_user':'', 'r_name':'',
                  'm_string': '', 'm_line':'', 'm_location':'', 'm_type':''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
@@ -65,6 +70,7 @@ def mon():
 
 @app.route('/monitor', methods=['POST'])
 def mon_upd():
+    """Updated monitor page, to handle filtering."""
     num_res = request.form['num_results']
     r_user = request.form['repo_user']
     r_name = request.form['repo_name']
