@@ -10,7 +10,9 @@ import conf
 
 
 class GithubSearch:
+    """Class to search Github's API for a given keyword(s)."""
     def __init__(self, query, username, password, directory, proxy):
+        """Initialize class and set variables."""
         c = conf.Configure()
         self.user = username
         self.pw = password
@@ -19,6 +21,7 @@ class GithubSearch:
         self.pxy = proxy
 
     def search_github(self, results_per_page, search_type='continuous'):
+        """Search Github's Code section of the API and return results."""
         rpp = results_per_page
         page_num = []
         if search_type == 'continuous':
