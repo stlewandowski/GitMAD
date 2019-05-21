@@ -15,8 +15,9 @@ import web_home as wh
 
 
 class RunProgram:
-
+    """Main driver for GitMAD, pulling all other parts together to run here."""
     def __init__(self, query, email, logging, res_per_pull, max_repo_size, ent, entropy_amt=4):
+        """Initialize class, set variables, and populate config files."""
         c = conf.Configure()
         conf_file, file_check = c.check_for_file(c.c_filename)
         pxy, db_u, db_p, db_h, db_db, g_u, g_p, d = c.populate_credentials(conf_file, file_check)
@@ -47,6 +48,7 @@ class RunProgram:
             self.do_ent = 'no entropy'
 
     def main_first(self):
+        """Run once to search through every match returned by the Github API search."""
         git_search = gs.GithubSearch(self.query, self.user, self.pw, self.directory, self.proxy)
         search_results = git_search.search_github(100, 'initial')
         repo_check = dr.DownloadRepo(search_results, self.max_size, self.user, self.pw, self.proxy)
@@ -58,6 +60,7 @@ class RunProgram:
         search_repos.iterate_thru_repos()
 
     def main_continuous(self):
+        """Run continuously to update with new results."""
         git_search = gs.GithubSearch(self.query, self.user, self.pw, self.directory, self.proxy)
         search_results = git_search.search_github(self.rpp)
         repo_check = dr.DownloadRepo(search_results, self.max_size, self.user, self.pw, self.proxy)
