@@ -15,6 +15,7 @@ import regex_matches as rm
 
 
 class DirectorySearch:
+    """Class to search through either a directory of committed files or a single commit file."""
     def __init__(self, in_query, in_dir, in_folder, in_dictionary, usr, pw,
                  host, db, email, logs, do_ent='', e_lvl=3.5, g_type='git_history'):
         self.d_in = in_dir
@@ -32,6 +33,7 @@ class DirectorySearch:
         self.do_logs = logs
 
     def generate_file_list(self, f_in_item):
+        """Generate a list of files to search through, if not searching the single git history file."""
         file_list = []
         if self.search_type != 'git_history':
             search_path = os.path.join(self.d_in, f_in_item)
@@ -54,6 +56,7 @@ class DirectorySearch:
             return file_list
 
     def search_file_list(self, r_dir, file_list, db_repo_id):
+        """Search through files / git commit file to pull out interesting results."""
         item_info_list = []
 
         if self.search_type != 'git_history':
@@ -129,6 +132,7 @@ class DirectorySearch:
 
     def search_item(self, repo_dir, master_list, in_line, in_fname, u_type, c_hash="n/a",
                     author="n/a", time="n/a", msg="n/a"):
+        """Individual function to search for regexes and entropy for a given line/item."""
         ent_result_list = []
         query_match = re.compile(self.in_query, re.IGNORECASE).search(in_line)
         match_types = [{'regex_match': query_match, 'match_type': 'Query Match'}]
@@ -176,6 +180,7 @@ class DirectorySearch:
                 master_list.append(entropy_output)
 
     def write_files(self, iil):
+        """Write search results to a csv and json file."""
         q_name = self.in_query.replace(".", "-")
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d--%H-%M--')
         csv_out_filename = timestamp + q_name + '.csv'
@@ -200,6 +205,10 @@ class DirectorySearch:
 
 
     def iterate_thru_repos(self):
+        """Driver for this class, to put other functions together, search, and generate results.
+        
+        In addition, this will email results (if enabled) as well as insert them into the database.
+        """
         dbc = database.DbOps(self.db_user, self.db_pw, self.db_host, self.db_database)
         total_added = 0
         total_list = []
