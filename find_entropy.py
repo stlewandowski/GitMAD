@@ -6,17 +6,22 @@ import re
 import entropy_whitelist as ew
 
 class GetEntropy:
-
+    """Class to calculate entropy from a given input."""
     def __init__(self, in_line, entropy_level):
+        """Initialize class and set variables."""        
         self.ent_level = entropy_level
         self.line = in_line
 
     def find_entropy(self, s):
-        # find shannon entropy for a given string
+        """Find shannon entropy for a given string."""
         p,lns = Counter(s), float(len(s))
         return -sum( count/lns * math.log(count/lns, 2) for count in p.values())
 
     def enum_entropy(self):
+        """Use find_entropy() function to calculate entropy.
+        
+        Input is the line of the file, broken up via different characters listed below.
+        """
         ent_wordlist = []
         ent_line_list = re.split(r'\"|\\|-|_|,|;|\[|]|<|>|%20| |\t|\||{|}|=|\(\)|\'|\.|:|@|/|\(|\)', self.line)
         ent_wordlist.extend(ent_line_list)
