@@ -10,8 +10,9 @@ import base64
 from prettytable import PrettyTable
 
 class EmailAction:
-
+    """Class to send an email alert of new results."""
     def __init__(self, e_from, e_to, e_domain, e_port, e_pw):
+        """Initialize class and set variables."""
         self.e_from = e_from
         self.e_to = e_to
         self.e_domain = e_domain
@@ -19,6 +20,7 @@ class EmailAction:
         self.e_pw = e_pw
 
     def send_alert(self, full_path, num_results, email_body):
+        """Construct email message and send."""
         message = MIMEMultipart()
         e_from = self.e_from
         e_to = self.e_to
