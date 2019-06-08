@@ -45,7 +45,7 @@ GitMAD takes the results above and inserts them into a database which contains i
 GitMAD was originally written in Python3.6 on Windows.  It has also been tested on Ubuntu 18.04.
 
 ## Software Requirements
-Python3
+Python 3.6+
 
 Pip for Python3
 
