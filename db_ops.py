@@ -8,6 +8,7 @@ from sqlalchemy.sql import text #for text query
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import join
 from sqlalchemy import desc
+from sqlalchemy.sql import and_, or_, not_
 import conf
 import datetime
 import configparser
@@ -183,7 +184,48 @@ class DbOps:
         #where_clause = ''
         # individual filters
         # need to work on chaining filters together
+        # see about making a filter '*' if there is no filter.
+        # if post_dict[item] == '' make it '*' and search all at once.
         if post_dict:
+            # if the fields in the dict are blank, set them to * for query
+            # for sql like - use % (0 or more) or _ (any single character)
+            if post_dict['r_user'] == '':
+                post_dict['r_user'] = '%'
+            if post_dict['r_name'] == '':
+                post_dict['r_name'] = '%'
+            if post_dict['m_string'] == '':
+                post_dict['m_string'] = '%'
+            if post_dict['m_line'] == '':
+                post_dict['m_line'] = '%'
+            if post_dict['m_location'] == '':
+                post_dict['m_location'] = '%'
+
+            m_s = post_dict['m_string']
+            m_ln = post_dict['m_line']
+            m_l = post_dict['m_location']
+            m_n = post_dict['r_name']
+            m_u = post_dict['r_user']
+
+            stmt = select(
+                [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
+                 r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
+                 r_res.c.match_commit_message,
+                 r_info.c.repo_description]).select_from(join_obj).where(
+                and_(
+                r_info.c.repo_user.like(f'%{m_u}'),
+                r_info.c.repo_name.like(f'%{m_n}%'),
+                #r_res.c.match_type == post_dict['m_type'],
+                r_res.c.match_string.like(f'%{m_s}%'),
+                r_res.c.match_line.like(f'%{m_ln}%'),
+                r_res.c.match_location.like(f'%{m_l}%')
+                )
+            ).order_by(desc(r_res.c.match_inserted)).limit(
+                post_dict['num_res'])
+
+            # this one needs to be treated differently
+            #if post_dict['m_type'] != '' and post_dict['m_type'] != 'Any':  # this is the type
+            '''
+            below works for one filter at a time, cannot chain filters together.
             if post_dict['r_user'] != '':
                 #where_clause += ".where(r_info.c.repo_user == " + post_dict['r_user'] + ")"
                 stmt = select(
@@ -235,7 +277,7 @@ class DbOps:
                      r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
                      r_res.c.match_commit_message,
                      r_info.c.repo_description]).select_from(join_obj).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-
+            '''
         if not post_dict:
             def_results = {'num_res':100}
             post_dict.update(def_results)
