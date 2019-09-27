@@ -16,16 +16,25 @@ GitMAD
         </tr>
         <tr>
             <td>Repo User:</td>
-            <td><input name="repo_user" type="text"></td>
+            {% if p_dict['r_user'] == '%' %}
+            <td><input name="repo_user" type="text" value=""></td>
+            {% else %}
+            <td><input name="repo_user" type="text" value="{{ p_dict['r_user'] }}"></td>
+            {% endif %}
         </tr>
         <tr>
             <td>Repo Name:</td>
-            <td><input name="repo_name" type="text"></td>
+            {% if p_dict['r_name'] == '%' %}
+            <td><input name="repo_name" type="text" value=""></td>
+            {% else %}
+            <td><input name="repo_name" type="text" value="{{ p_dict['r_name'] }}"></td>
+            {% endif %}
         </tr>
         <tr>
             <td>Match Type:</td>
             <td><select name="match_type">
                 <option value="Any">Any</option>
+                <option value="Query Match">Query Match</option>
                 {% for item in select_opt %}
                 <option value="{{ item }}" >{{ item }}</option>
                 {% endfor %}
@@ -33,26 +42,37 @@ GitMAD
         </tr>
         <tr>
             <td>In Match String:</td>
-            <td><input name="match_string" type="text"></td>
+            {% if p_dict['m_string'] == '%' %}
+            <td><input name="match_string" type="text" value=""></td>
+            {% else %}
+            <td><input name="match_string" type="text" value="{{ p_dict['m_string'] }}"></td>
+            {% endif %}
         </tr>
         <tr>
             <td>In Match Line:</td>
-            <td><input name="match_line" type="text"></td>
+            {% if p_dict['m_line'] == '%' %}
+            <td><input name="match_line" type="text" value=""></td>
+            {% else %}
+            <td><input name="match_line" type="text" value="{{ p_dict['m_line'] }}"></td>
+            {% endif %}
         </tr>
         <tr>
             <td>In Match Location:</td>
-            <td><input name="location" type="location"></td>
+            {% if p_dict['m_location'] == '%' %}
+            <td><input name="location" type="location" value=""></td>
+            {% else %}
+            <td><input name="location" type="location" value="{{ p_dict['m_location'] }}"></td>
+            {% endif %}
         </tr>
 
 
         <tr>
-            <td></td>
-            <td><input type="Submit"></td>
+            <td><input type="Submit" name="btn" value="Clear Filter"></td>
+            <td><input type="Submit" name="btn" value="Submit"></td>
+
          </tr>
     </table>
 </form>
-<h2>The 'Match Type' filter is presently not available.</h2>
-<h2>In addition, the above filters cannot yet be chained together</h2>
 <br/>
 <h1>New Results:</h1>
 <p>Number of recent results shown:</p>

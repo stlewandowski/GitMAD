@@ -178,17 +178,7 @@ class DbOps:
 
         join_obj = r_res.join(r_info, r_info.c.repo_id == r_res.c.match_repo_id)
 
-        #post_dict = {'num_res': num_res, 'r_user': r_user, 'r_name': r_name,
-        #             'm_string': m_string, 'm_line': m_line, 'm_location': m_location}
-
-        #where_clause = ''
-        # individual filters
-        # need to work on chaining filters together
-        # see about making a filter '*' if there is no filter.
-        # if post_dict[item] == '' make it '*' and search all at once.
         if post_dict:
-            # if the fields in the dict are blank, set them to * for query
-            # for sql like - use % (0 or more) or _ (any single character)
             if post_dict['r_user'] == '':
                 post_dict['r_user'] = '%'
             if post_dict['r_name'] == '':
@@ -199,12 +189,18 @@ class DbOps:
                 post_dict['m_line'] = '%'
             if post_dict['m_location'] == '':
                 post_dict['m_location'] = '%'
+            if post_dict['m_type'] == 'Any':
+                post_dict['m_type'] = '%'
+            if post_dict['m_type'] == '':
+                post_dict['m_type'] = '%'
 
             m_s = post_dict['m_string']
             m_ln = post_dict['m_line']
             m_l = post_dict['m_location']
             m_n = post_dict['r_name']
             m_u = post_dict['r_user']
+            m_t = post_dict['m_type']
+
 
             stmt = select(
                 [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
@@ -214,7 +210,7 @@ class DbOps:
                 and_(
                 r_info.c.repo_user.like(f'%{m_u}'),
                 r_info.c.repo_name.like(f'%{m_n}%'),
-                #r_res.c.match_type == post_dict['m_type'],
+                r_res.c.match_type.like(f'%{m_t}%'),
                 r_res.c.match_string.like(f'%{m_s}%'),
                 r_res.c.match_line.like(f'%{m_ln}%'),
                 r_res.c.match_location.like(f'%{m_l}%')
@@ -222,62 +218,7 @@ class DbOps:
             ).order_by(desc(r_res.c.match_inserted)).limit(
                 post_dict['num_res'])
 
-            # this one needs to be treated differently
-            #if post_dict['m_type'] != '' and post_dict['m_type'] != 'Any':  # this is the type
-            '''
-            below works for one filter at a time, cannot chain filters together.
-            if post_dict['r_user'] != '':
-                #where_clause += ".where(r_info.c.repo_user == " + post_dict['r_user'] + ")"
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).where(r_info.c.repo_user == post_dict['r_user']).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            elif post_dict['r_name'] != '':
-                #where_clause += ".where(r_info.c.repo_name == " + post_dict['r_name'] + ")"
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).where(r_info.c.repo_name == post_dict['r_name']).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            elif post_dict['m_type'] != '' and post_dict['m_type'] != 'Any':
-                #where_clause += ".where(r_info.c.repo_name == " + post_dict['r_name'] + ")"
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).where(r_res.c.match_type == post_dict['m_type']).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            elif post_dict['m_string'] != '':
-                m_s = post_dict['m_string']
-                #where_clause += ".where(r_res.c.match_string.like('%" + post_dict['m_string'] + "%'))"
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).where(r_res.c.match_string.like(f'%{m_s}%')).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            elif post_dict['m_line'] != '':
-                m_ln = post_dict['m_line']
-                #where_clause += ".where(r_res.c.match_line.like('%" + post_dict['m_line'] + "%'))"
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).where(r_res.c.match_line.like(f'%{m_ln}%')).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            elif post_dict['m_location'] != '':
-                m_l = post_dict['m_location']
-                #where_clause += ".where(r_res.c.match_location.like('%" + post_dict['m_location'] + "%'))"
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).where(r_res.c.match_location.like(f'%{m_l}%')).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            else:
-                stmt = select(
-                    [r_info.c.repo_user, r_info.c.repo_name, r_res.c.match_inserted, r_res.c.match_type,
-                     r_res.c.match_string, r_res.c.match_line, r_res.c.match_location, r_res.c.match_update_type,
-                     r_res.c.match_commit_message,
-                     r_info.c.repo_description]).select_from(join_obj).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
-            '''
+
         if not post_dict:
             def_results = {'num_res':100}
             post_dict.update(def_results)
@@ -288,8 +229,9 @@ class DbOps:
                  r_info.c.repo_description]).select_from(join_obj).order_by(desc(r_res.c.match_inserted)).limit(post_dict['num_res'])
 
         res = cnxn.execute(stmt)
+        nr = res.rowcount
 
-        return res, num_results, stmt
+        return res, nr, stmt
 
     def truncate(self, in_line, max_len):
         """Truncate line."""

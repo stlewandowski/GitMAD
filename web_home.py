@@ -71,15 +71,19 @@ def mon():
 @app.route('/monitor', methods=['POST'])
 def mon_upd():
     """Updated monitor page, to handle filtering."""
-    num_res = request.form['num_results']
-    r_user = request.form['repo_user']
-    r_name = request.form['repo_name']
-    m_string = request.form['match_string']
-    m_line = request.form['match_line']
-    m_location = request.form['location']
-    m_type = request.form['match_type']
-    post_dict = {'num_res':num_res, 'r_user':r_user, 'r_name':r_name,
-                 'm_string': m_string, 'm_line':m_line, 'm_location':m_location, 'm_type':m_type}
+    if request.form['btn'] == "Submit":
+        num_res = request.form['num_results']
+        r_user = request.form['repo_user']
+        r_name = request.form['repo_name']
+        m_string = request.form['match_string']
+        m_line = request.form['match_line']
+        m_location = request.form['location']
+        m_type = request.form['match_type']
+        post_dict = {'num_res':num_res, 'r_user':r_user, 'r_name':r_name,
+                     'm_string': m_string, 'm_line':m_line, 'm_location':m_location, 'm_type':m_type}
+    if request.form['btn'] == "Clear Filter":
+        post_dict = {'num_res': 100, 'r_user': '', 'r_name': '',
+                     'm_string': '', 'm_line': '', 'm_location': '', 'm_type': ''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
     s_val = regex_matches.to_match
     s_list = []
