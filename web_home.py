@@ -33,26 +33,32 @@ def search():
 def repo_info():
     """Initial repo_info page, showing various metadata for each repository."""
     post_dict = {'num_res': 100, 'r_user': '', 'r_name': '',
-                 'r_cloned': '', 'r_desc': '', 'r_checked': ''}
+                 'r_cloned': 'Any', 'r_desc': '', 'r_checked': ''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
-    res = x.display_repos(post_dict)
+    res, num = x.display_repos(post_dict)
     c_list = ['cloned', 'not_cloned']
-    return render_template('repo_info.html', results=res, select_opt=c_list)
+    return render_template('repo_info.html', results=res, num_results=num, select_opt=c_list, p_dict=post_dict)
 
 @app.route('/repo_info', methods=['POST'])
 def repo_info_upd():
     """Updated repo_info page, to handle filtering."""
-    num_res = request.form['num_results']
-    r_user = request.form['repo_user']
-    r_cloned = request.form['is_cloned']
-    r_desc = request.form['repo_description']
-    r_checked = request.form['repo_checked']
-    post_dict = {'num_res': num_res, 'r_user': r_user, 'r_cloned': r_cloned,
-                 'r_desc': r_desc, 'r_checked': r_checked}
+    if request.form['btn'] == "Submit":
+        num_res = request.form['num_results']
+        r_user = request.form['repo_user']
+        r_name = request.form['repo_name']
+        r_cloned = request.form['is_cloned']
+        r_desc = request.form['repo_description']
+        #r_checked = request.form['repo_checked']
+        r_checked = ''
+        post_dict = {'num_res': num_res, 'r_user': r_user, 'r_name': r_name, 'r_cloned': r_cloned,
+                     'r_desc': r_desc, 'r_checked': r_checked}
+    if request.form['btn'] == "Clear Filter":
+        post_dict = {'num_res': 100, 'r_user': '', 'r_name': '',
+                     'r_cloned': 'Any', 'r_desc': '', 'r_checked': ''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
     c_list = ['cloned', 'not_cloned']
-    res = x.display_repos(post_dict)
-    return render_template('repo_info.html', results=res, select_opt=c_list, p_dict=post_dict)
+    res, num = x.display_repos(post_dict)
+    return render_template('repo_info.html', results=res, num_results=num, select_opt=c_list, p_dict=post_dict)
 
 @app.route('/monitor')
 def mon():

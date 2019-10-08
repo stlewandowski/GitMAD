@@ -12,11 +12,23 @@ GitMAD
         </tr>
         <tr>
             <td>Number of results:</td>
-            <td><input name="num_results" type="number" value="100"></td>
+            <td><input name="num_results" type="number" value="{{ p_dict['num_res'] }}"></td>
         </tr>
         <tr>
             <td>Repo User:</td>
-            <td><input name="repo_user" type="text"></td>
+            {% if p_dict['r_user'] == '%' %}
+            <td><input name="repo_user" type="text" value=""></td>
+            {% else %}
+            <td><input name="repo_user" type="text" value="{{ p_dict['r_user'] }}"></td>
+            {% endif %}
+        </tr>
+        <tr>
+            <td>Repo Name:</td>
+            {% if p_dict['r_name'] == '%' %}
+            <td><input name="repo_name" type="text" value=""></td>
+            {% else %}
+            <td><input name="repo_name" type="text" value="{{ p_dict['r_name'] }}"></td>
+            {% endif %}
         </tr>
         <tr>
             <td>Repo Cloned:</td>
@@ -29,23 +41,22 @@ GitMAD
         </tr>
         <tr>
             <td>In Repo Description:</td>
-            <td><input name="repo_description" type="text"></td>
+            {% if p_dict['r_desc'] == '%' %}
+            <td><input name="repo_description" type="text" value=""></td>
+            {% else %}
+            <td><input name="repo_description" type="text" value="{{ p_dict['r_desc'] }}"></td>
+            {% endif %}
         </tr>
         <tr>
-            <td>Repo Last Checked (eg. 2018-06-12T19:30):</td>
-            <td><input name="repo_checked" type="datetime-local"></td>
-        </tr>
-
-
-
-        <tr>
-            <td></td>
-            <td><input type="Submit"></td>
+            <td><input type="Submit" name="btn" value="Clear Filter"></td>
+            <td><input type="Submit" name="btn" value="Submit"></td>
          </tr>
     </table>
 </form>
-<h2>The 'Repo Last Checked' filter is presently not available.</h2>
-<h2>In addition, the above filters cannot yet be chained together</h2>
+<br/>
+<h2>Results:</h2>
+<p>Number of recent results shown:</p>
+<p>{{num_results}}</p>
 <br/>
 <table id="web_monitor2">
     <thead>

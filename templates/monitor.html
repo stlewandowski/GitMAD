@@ -12,7 +12,7 @@ GitMAD
         </tr>
         <tr>
             <td>Number of results:</td>
-            <td><input name="num_results" type="number" value="100"></td>
+            <td><input name="num_results" type="number" value="{{ p_dict['num_res'] }}"></td>
         </tr>
         <tr>
             <td>Repo User:</td>
@@ -74,7 +74,7 @@ GitMAD
     </table>
 </form>
 <br/>
-<h1>New Results:</h1>
+<h2>Results:</h2>
 <p>Number of recent results shown:</p>
 <p>{{num_results}}</p>
 <!-- <p>Query:</p>

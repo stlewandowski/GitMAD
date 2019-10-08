@@ -136,43 +136,73 @@ class DbOps:
         cnxn, enxn = self.create_conn()
         r_info = self.get_table('repo_info', enxn)
 
-        if post_dict['r_user'] != '':
-            stmt = select([r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
-             r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
-             r_info.c.repo_description, r_info.c.repo_last_checked,
-             r_info.c.repo_latest_commit]).where(r_info.c.repo_user == post_dict['r_user']).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+        print(post_dict)
+        if post_dict:
+            if post_dict['r_user'] == '':
+                post_dict['r_user'] = '%'
+            if post_dict['r_name'] == '':
+                post_dict['r_name'] == '%'
+            if post_dict['r_cloned'] == 'Any':
+                post_dict['r_cloned'] = '%'
+            if post_dict['r_desc'] == '':
+                post_dict['r_desc'] = '%'
+            if post_dict['r_checked'] == '':
+                post_dict['r_checked'] = '%'
 
-        elif post_dict['r_cloned'] != '' and post_dict['r_cloned'] != 'Any':
-            stmt = select([r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
-             r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
-             r_info.c.repo_description, r_info.c.repo_last_checked,
-             r_info.c.repo_latest_commit]).where(r_info.c.repo_cloned == post_dict['r_cloned']).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
-
-        elif post_dict['r_desc'] != '':
+            r_u = post_dict['r_user']
+            r_n = post_dict['r_name']
+            r_c = post_dict['r_cloned']
             r_d = post_dict['r_desc']
-            stmt = select([r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
-             r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
-             r_info.c.repo_description, r_info.c.repo_last_checked,
-             r_info.c.repo_latest_commit]).where(r_info.c.repo_description.like(f'%{r_d}%')).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+            r_chk = post_dict['r_checked']
 
-        else:
+            if r_c == '%':
+                stmt = select(
+                    [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+                     r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
+                     r_info.c.repo_description, r_info.c.repo_last_checked,
+                     r_info.c.repo_latest_commit]).where(
+                    and_(
+                        r_info.c.repo_user.like(f'%{r_u}%'),
+                        r_info.c.repo_name.like(f'%{r_n}%'),
+                        r_info.c.repo_cloned.like(f'%{r_c}%'),
+                        r_info.c.repo_description.like(f'%{r_d}%'),
+                        # r_info.c.repo_last_checked.like(f'%{r_chk}')
+                    )
+                ).order_by(desc(r_info.c.repo_last_checked)).limit(
+                    post_dict['num_res'])
+            else:
+                stmt = select(
+                    [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+                     r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
+                     r_info.c.repo_description, r_info.c.repo_last_checked,
+                     r_info.c.repo_latest_commit]).where(
+                    and_(
+                        r_info.c.repo_user.like(f'%{r_u}'),
+                        r_info.c.repo_name.like(f'%{r_n}'),
+                        r_info.c.repo_cloned == r_c,
+                        r_info.c.repo_description.like(f'%{r_d}'),
+                        # r_info.c.repo_last_checked.like(f'%{r_chk}')
+                    )
+                ).order_by(desc(r_info.c.repo_last_checked)).limit(
+                    post_dict['num_res'])
+
+        if not post_dict:
+            def_results = {'num_res': 100}
+            post_dict.update(def_results)
             stmt = select(
                 [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
                  r_info.c.repo_name, r_info.c.repo_size, r_info.c.repo_cloned,
                  r_info.c.repo_description, r_info.c.repo_last_checked,
-                 r_info.c.repo_latest_commit]).order_by(desc(r_info.c.repo_last_checked)).limit(
-                post_dict['num_res'])
+                 r_info.c.repo_latest_commit]).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
 
         res = cnxn.execute(stmt)
+        nr = res.rowcount
 
-        return res
+        return res, nr
 
     def display_match_results(self, num_results, post_dict = {}):
         """Query and display repo search results based on filtering items in web app."""
         cnxn, enxn = self.create_conn()
-        #r_s_r = self.get_table('repo_search_results', enxn)
-        #select_st = select([r_s_r]).order_by(desc(r_s_r.c.match_inserted)).limit(500)
-        #res = cnxn.execute(select_st)
         r_info = self.get_table('repo_info', enxn)
         r_res = self.get_table('repo_search_results', enxn)
 
@@ -208,7 +238,7 @@ class DbOps:
                  r_res.c.match_commit_message,
                  r_info.c.repo_description]).select_from(join_obj).where(
                 and_(
-                r_info.c.repo_user.like(f'%{m_u}'),
+                r_info.c.repo_user.like(f'%{m_u}%'),
                 r_info.c.repo_name.like(f'%{m_n}%'),
                 r_res.c.match_type.like(f'%{m_t}%'),
                 r_res.c.match_string.like(f'%{m_s}%'),
