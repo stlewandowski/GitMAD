@@ -200,6 +200,38 @@ class DbOps:
 
         return res, nr
 
+    def display_repos_api(self, post_dict={}):
+        """API Query to get repo info."""
+        # display list of repos, based on some constraint (time)
+        cnxn, enxn = self.create_conn()
+        r_info = self.get_table('repo_info', enxn)
+
+        if post_dict:
+            # handle filters and bring back appropriate results
+            # to adjust query below for filtering
+            def_results = {'num_res': 100}
+            post_dict.update(def_results)
+            stmt = select(
+                [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+                 r_info.c.repo_name, r_info.c.repo_full_name, r_info.c.repo_updated_ts,
+                 r_info.c.repo_size, r_info.c.repo_cloned,
+                 r_info.c.repo_description, r_info.c.repo_last_checked,
+                 r_info.c.repo_latest_commit]).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+
+        if not post_dict:
+            def_results = {'num_res': 100}
+            post_dict.update(def_results)
+            stmt = select(
+                [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
+                 r_info.c.repo_name, r_info.c.repo_full_name, r_info.c.repo_updated_ts,
+                 r_info.c.repo_size, r_info.c.repo_cloned,
+                 r_info.c.repo_description, r_info.c.repo_last_checked,
+                 r_info.c.repo_latest_commit]).order_by(desc(r_info.c.repo_last_checked)).limit(post_dict['num_res'])
+
+        res = cnxn.execute(stmt)
+        nr = res.rowcount
+        return res, nr
+
     def display_match_results(self, num_results, post_dict = {}):
         """Query and display repo search results based on filtering items in web app."""
         cnxn, enxn = self.create_conn()

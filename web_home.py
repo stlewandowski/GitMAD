@@ -1,9 +1,11 @@
 #!/usr/bin/python3
 
-from flask import Flask, render_template, url_for, request
+from flask import Flask, render_template, url_for, request, Response
 import db_ops as db
 import conf
 import regex_matches
+import json
+import datetime
 
 c = conf.Configure()
 conf_file, file_check = c.check_for_file(c.c_filename)
@@ -23,6 +25,59 @@ def index():
     """Index page."""
     return render_template('index.html')
 
+def process_repos(db_res, num_res):
+    results = {}
+    r_list = []
+    for r in db_res:
+        local_list = []
+        r_dict = {}
+        for item in r:
+            local_list.append(item)
+        r_dict["Repo ID"] = local_list[0]
+        r_dict["Repo Owner ID"] = local_list[1]
+        r_dict["Repo User"] = local_list[2]
+        r_dict["Repo Name"] = local_list[3]
+        r_dict["Repo Full Name"] = local_list[4]
+        if local_list[5]:
+            r_dict["Repo Updated Timestamp"] = local_list[5].strftime("%Y-%m-%d %H:%M:%S")
+        else:
+            r_dict["Repo Updated Timestamp"] = local_list[5]
+        r_dict["Repo Size"] = local_list[6]
+        r_dict["Repo Cloned"] = local_list[7]
+        r_dict["Repo Description"] = local_list[8]
+        r_dict["Repo Last Checked Timestamp"] = local_list[9].strftime("%Y-%m-%d %H:%M:%S")
+        r_dict["Repo Last Commit Hash"] = local_list[10]
+
+        r_list.append(r_dict)
+    matches = {"count": num_res, "matches": r_list}
+    results.update(matches)
+    results = json.dumps(results)
+    return results
+
+@app.route('/api/repos')
+def api_repo():
+    """Get most recent 100 results of Repos"""
+    x = db.DbOps(db_u, db_p, db_h, db_db)
+    res, num = x.display_repos_api()
+    results = process_repos(res, num)
+    resp = Response(results, status=200, mimetype='application/json')
+    return resp
+
+@app.route('/api/repos', methods=['POST'])
+def api_repo_filter():
+    """Accepts filters to return more specific results."""
+
+    return render_template('/api/repos.html', title="Repo Info API")
+
+@app.route('/api/results')
+def api_results():
+    """Get most recent 100 results of Search Results"""
+    return render_template('/api/results.html', title="Search Results API")
+
+@app.route('/api/results', methods=['POST'])
+def api_results_filter():
+    """Accepts filters to return more specific results."""
+    return render_template('/api/results.html', title="Search Results API")
 
 @app.route('/search')
 def search():
