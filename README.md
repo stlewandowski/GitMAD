@@ -102,7 +102,7 @@ https://dev.mysql.com/downloads/workbench/
 https://github.com/deepdivesec/GitMAD/tree/master/GitMAD-install
 
 ## Known Issues
-* Sometimes the Github API will return 0 for the size of a repository, regardless of its size.  Due to the fact that a lot of the time these are larger than the maximum size flag, a repository with size of 0 will not be downloaded.
+* Sometimes the Github API will return 0 for the size of a repository, regardless of its size.  Due to the fact that a lot of the time these are significantly larger than the maximum size flag, a repository with size of 0 will not be downloaded.
 
 ## Status 
 (10/2019) - Filtering in the Web Application has been enhanced and an API is being presently added.
