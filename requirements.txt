@@ -9,3 +9,4 @@ prettytable
 PyMySQL
 SQLAlchemy
 Werkzeug
+requests
