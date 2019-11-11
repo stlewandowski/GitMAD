@@ -38,9 +38,9 @@ CREATE TABLE IF NOT EXISTS `github_search`.`repo_info` (
   `repo_updated_ts` DATETIME NULL DEFAULT NULL,
   `repo_size` INT(11) NULL DEFAULT NULL,
   `repo_cloned` ENUM('cloned', 'not_cloned') NULL DEFAULT NULL,
-  `repo_description` VARCHAR(4096) NULL DEFAULT NULL,
+  `repo_description` VARCHAR(4096) NOT NULL DEFAULT 'n/a',
   `repo_last_checked` DATETIME NULL DEFAULT CURRENT_TIMESTAMP,
-  `repo_latest_commit` VARCHAR(64) NULL DEFAULT NULL,
+  `repo_latest_commit` VARCHAR(64) NOT NULL DEFAULT 'n/a',
   PRIMARY KEY (`repo_id`))
 ENGINE = InnoDB
 DEFAULT CHARACTER SET = utf8mb4

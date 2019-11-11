@@ -37,6 +37,46 @@ r_whitelist = [{'regex':r'\b[A-Za-z][a-z]+([A-Z][a-z]*)+\b'}] # Camel Case
 
 GitMAD takes the results above and inserts them into a database which contains information on the file the match was found, as well as information about the repository. It also inserts the string that was matched and the line of the match. These results are available via an email alert, in the database, and via the web application.
 
+### Web Application
+Running web_home.py will open a web application on port 5000.  There is a 'Monitor' section which allows a user to view and filter on individual matches within a repository.  The 'Repo Info' section allows a user to view and filter on the repository matches themselves.
+
+### API
+#### /api/repos
+Allows a user to view either the first 100 most recent results, or to use various filters to search for a given repo or set of repos.
+
+A GET request with no parameters to /api/repos will return the 100 most recent results.
+```python
+GET http://localhost:5000/api/repos
+Content-Type: application/json
+```
+
+A POST request allows a user to filter for a specific repo or repos.
+
+Send a JSON object (Content-Type: application/json) with at least one of the following keys:
+1) page - Results are given in pages of 100.  {"page": 2} equals 101-200, {"page": 3} equals 201-300 and so on.
+2) repo_user - Username of the individual posting the repository.
+3) repo_name - Name of the repository.
+4) repo_cloned - Whether the repo(s) being searched for were cloned locally or not due to size {"repo_cloned": "not_cloned"}
+5) repo_desc - Keywords to search for in the repository description {"repo_desc": "config"}
+                        
+POST data example (at least one of these keys must be used):
+```python
+POST http://localhost:5000/api/repos
+Content-Type: application/json
+ 
+ {
+ "page": 1, 
+ "repo_user": "<Username of the repository>", 
+ "repo_name": "<Name of the repository>", 
+ "repo_cloned": "<cloned|not_cloned>", 
+ "repo_desc": "<text string to search for in the repository description>"
+ }
+```
+
+#### /api/results
+
+Coming Soon
+
 ## Current Status
 *This project is in active development*
 
@@ -45,7 +85,7 @@ GitMAD takes the results above and inserts them into a database which contains i
 GitMAD was originally written in Python3.6 on Windows.  It has also been tested on Ubuntu 18.04.
 
 ## Software Requirements
-Python 3.6+
+Python 3.6+ (f-strings are used in this project, which requires Python 3.6)
 
 Pip for Python3
 
