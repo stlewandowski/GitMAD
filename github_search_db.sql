@@ -60,7 +60,7 @@ CREATE TABLE IF NOT EXISTS `github_search`.`repo_search_results` (
   `match_string` VARCHAR(256) NULL DEFAULT NULL,
   `match_location` VARCHAR(1024) NULL DEFAULT NULL,
   `match_line` VARCHAR(8192) NULL DEFAULT NULL,
-  `match_item_entropy` DECIMAL(17,15) NULL DEFAULT NULL,
+  `match_item_entropy` DECIMAL(17,15) NOT NULL DEFAULT 0.0,
   `match_line_hash` VARCHAR(64) NULL DEFAULT NULL,
   `match_update_type` VARCHAR(10) NULL DEFAULT NULL,
   `match_commit_hash` VARCHAR(45) NULL DEFAULT NULL,
@@ -69,7 +69,6 @@ CREATE TABLE IF NOT EXISTS `github_search`.`repo_search_results` (
   `match_commit_message` VARCHAR(1024) NULL DEFAULT NULL,
   PRIMARY KEY (`match_master_id`),
   UNIQUE INDEX `match_master_id_UNIQUE` (`match_master_id` ASC) VISIBLE,
-  UNIQUE INDEX `match_line_hash_UNIQUE` (`match_line_hash` ASC) VISIBLE,
   INDEX `repo_id` (`match_repo_id` ASC) VISIBLE,
   CONSTRAINT `repo_id`
     FOREIGN KEY (`match_repo_id`)

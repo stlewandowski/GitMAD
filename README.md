@@ -42,7 +42,7 @@ Running web_home.py will open a web application on port 5000.  There is a 'Monit
 
 ### API
 #### /api/repos
-Allows a user to view either the first 100 most recent results, or to use various filters to search for a given repo or set of repos.
+Allows a user to view either the first 100 most recent repositories, or to use various filters to search for a given repo or set of repos.
 
 A GET request with no parameters to /api/repos will return the 100 most recent results.
 ```python
@@ -74,8 +74,43 @@ Content-Type: application/json
 ```
 
 #### /api/results
+Allows a user to view either the first 100 most recent results, or to use various filters to search for a given match or set of matches.
 
-Coming Soon
+
+A GET request with no parameters to /api/repos will return the 100 most recent results.
+```python
+GET http://localhost:5000/api/results
+Content-Type: application/json
+```
+
+A POST request allows a user to filter for a specific match or type of match.
+
+Send a JSON object (Content-Type: application/json) with at least one of the following keys:
+1) page - Results are given in pages of 100.  {"page": 2} equals 101-200, {"page": 3} equals 201-300 and so on.
+2) match_type - String for type of match {"match_type": ["password", "username"]}
+3) match_string - A string to match the matched item {"match_string": "password"}
+4) match_location - A string to match the file path {"match_location": "conf"}
+5) match_line - A string that will match on the line the item was found {"match_line": "jdbc:mysql://"}
+6) match_update_type - '+' for items added to the repo, '-' for items deleted. {"match_update_type": "-"}
+7) match_author - String for the author of the commit {"match_author": "johndoe"}
+8) match_message - String to match the commit message {"match_message": "credentials"}
+                        
+POST data example (at least one of these keys must be used):
+```python
+POST http://localhost:5000/api/repos
+Content-Type: application/json
+ 
+{
+"page": 2,
+"match_type": "<type of match>", 
+"match_string": "<item that was matched>",
+"match_location": "<file location where item was matched>", 
+"match_line": "<match something on the line of the initial match>", 
+"match_update_type": "<['+','-'] addition or deletion to/from repo>",
+"match_author": "<commit author>", 
+"match_message": "<commit message>"
+ }
+```
 
 ## Current Status
 *This project is in active development*
@@ -146,3 +181,4 @@ https://github.com/deepdivesec/GitMAD/tree/master/GitMAD-install
 
 ## Status 
 (10/2019) - Filtering in the Web Application has been enhanced and an API is being presently added.
+(11/2019) - API for Repositories and Matches has been added.

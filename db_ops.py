@@ -217,12 +217,14 @@ class DbOps:
         if post_dict:
             # handle filters and bring back appropriate results
             # Post Dict Example:
-            # {"num_res": 100, "page": 1, "repo_user": "ddd", "repo_name": "ccc", "repo_cloned": "yes",
+            # {"num_res":33, "page":2, "repo_user": "johndoe", "repo_name": "secretrepo",
+            # "repo_cloned": ["cloned", "not_cloned"], "repo_desc": "config"}
             page = post_dict['page']
             if page > 1:
                 offset = (page - 1) * 100
             elif page == 1:
                 offset = 0
+
             if post_dict["repo_cloned"] != '%':
                 stmt = select(
                     [r_info.c.repo_id, r_info.c.repo_owner_id, r_info.c.repo_user,
@@ -266,9 +268,8 @@ class DbOps:
                  r_info.c.repo_latest_commit]).order_by(desc(r_info.c.repo_last_checked)).limit(100)
 
         res = cnxn.execute(stmt)
-        # nr = res.rowcount #get the count of results for search
-        nr = self.get_count(r_info)  # get total count of rows in DB
-        return res, nr, page
+        nq = res.rowcount #get the count of results for search
+        return res, page, nq
 
     def display_match_results(self, num_results, post_dict={}):
         """Query and display repo search results based on filtering items in web app."""
@@ -331,6 +332,71 @@ class DbOps:
         nr = res.rowcount
 
         return res, nr, stmt
+
+    def display_results_api(self, post_dict={}):
+        """API Query to get results info."""
+        cnxn, enxn = self.create_conn()
+        r_res = self.get_table('repo_search_results', enxn)
+        if post_dict:
+            print(post_dict)
+            # Post Dict Example:
+            # {"num_res":33, "page": 2, "match_type": "Password", "match_string": "secret",
+            # "match_location": "config", "match_line": "jdbc", "match_update_type": ["+","-"],
+            # "match_author": "John Doe", "match_message": "config"}
+            page = post_dict['page']
+            if page > 1:
+                offset = (page - 1) * 100
+            elif page == 1:
+                offset = 0
+            count_stmt = res_stmt = select(
+                [r_res.c.match_master_id, r_res.c.match_repo_id, r_res.c.match_inserted, r_res.c.match_type,
+                 r_res.c.match_string, r_res.c.match_location, r_res.c.match_line, r_res.c.match_item_entropy,
+                 r_res.c.match_line_hash, r_res.c.match_update_type, r_res.c.match_commit_hash,
+                 r_res.c.match_commit_author,
+                 r_res.c.match_commit_time, r_res.c.match_commit_message]).where(
+                and_(
+                    r_res.c.match_type.like(f'%{post_dict["match_type"]}%'),
+                    r_res.c.match_string.like(f'%{post_dict["match_string"]}%'),
+                    r_res.c.match_location.like(f'%{post_dict["match_location"]}%'),
+                    r_res.c.match_line.like(f'%{post_dict["match_line"]}%'),
+                    r_res.c.match_update_type.like(f'%{post_dict["match_update_type"]}%'),
+                    r_res.c.match_commit_author.like(f'%{post_dict["match_author"]}%'),
+                    r_res.c.match_commit_message.like(f'%{post_dict["match_message"]}%')
+                )
+            ).order_by(desc(r_res.c.match_master_id))
+
+            res_stmt = select(
+                [r_res.c.match_master_id, r_res.c.match_repo_id, r_res.c.match_inserted, r_res.c.match_type,
+                 r_res.c.match_string, r_res.c.match_location, r_res.c.match_line, r_res.c.match_item_entropy,
+                 r_res.c.match_line_hash, r_res.c.match_update_type, r_res.c.match_commit_hash,
+                 r_res.c.match_commit_author,
+                 r_res.c.match_commit_time, r_res.c.match_commit_message]).where(
+                and_(
+                    r_res.c.match_type.like(f'%{post_dict["match_type"]}%'),
+                    r_res.c.match_string.like(f'%{post_dict["match_string"]}%'),
+                    r_res.c.match_location.like(f'%{post_dict["match_location"]}%'),
+                    r_res.c.match_line.like(f'%{post_dict["match_line"]}%'),
+                    r_res.c.match_update_type.like(f'%{post_dict["match_update_type"]}%'),
+                    r_res.c.match_commit_author.like(f'%{post_dict["match_author"]}%'),
+                    r_res.c.match_commit_message.like(f'%{post_dict["match_message"]}%')
+                )
+            ).order_by(desc(r_res.c.match_master_id)).limit(
+                post_dict['num_res']).offset(offset)
+            cnt = cnxn.execute(count_stmt)
+            nq = cnt.rowcount  # get the count of results for search
+
+        if not post_dict:
+            page = 1
+            res_stmt = select(
+                [r_res.c.match_master_id, r_res.c.match_repo_id, r_res.c.match_inserted, r_res.c.match_type,
+                 r_res.c.match_string, r_res.c.match_location, r_res.c.match_line, r_res.c.match_item_entropy,
+                 r_res.c.match_line_hash, r_res.c.match_update_type, r_res.c.match_commit_hash, r_res.c.match_commit_author,
+                 r_res.c.match_commit_time, r_res.c.match_commit_message]).order_by(desc(r_res.c.match_master_id)).limit(100)
+            nq = self.get_count(r_res)
+
+        res = cnxn.execute(res_stmt)
+        return res, page, nq
+
 
     def truncate(self, in_line, max_len):
         """Truncate line."""
