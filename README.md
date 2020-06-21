@@ -1,5 +1,3 @@
-# See the 'develop' branch for my development of a new version of this project.
-
 # GitMAD (Git Monitor, Alert, Discover)
 
 GitMAD is a full stack application that monitors Github for a given keyword(s) or domain. GitMAD searches code hosted on Github for a matching keyword. On finding a match, GitMAD will clone the repository and search through the files for a series of configurable regular expressions. GitMAD then takes those results and inserts them into a database for later viewing. These results can also be sent as email alerts. GitMAD runs continuously to discover new repositories matching the input keyword.
