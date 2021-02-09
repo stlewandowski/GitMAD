@@ -6,14 +6,14 @@ import json
 import datetime
 import math
 import time
-import conf
+import _conf
 
 
 class GithubSearch:
     """Class to search Github's API for a given keyword(s)."""
     def __init__(self, query, username, password, directory, proxy):
         """Initialize class and set variables."""
-        c = conf.Configure()
+        c = _conf.Configure()
         self.user = username
         self.pw = password
         self.query = query

@@ -1,14 +1,14 @@
 #!/usr/bin/python3
 
 from flask import Flask, render_template, url_for, request, Response
-import db_ops as db
-import conf
-import regex_matches
+import _db_ops as db
+import _conf
+import _regex_matches
 import json
 import datetime
 import decimal
 
-c = conf.Configure()
+c = _conf.Configure()
 conf_file, file_check = c.check_for_file(c.c_filename)
 pxy, db_u, db_p, db_h, db_db, g_u, g_p, d = c.populate_credentials(conf_file, file_check)
 db_user = db_u
@@ -382,7 +382,7 @@ def mon():
                  'm_string': '', 'm_line': '', 'm_location': '', 'm_type': ''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
     res, num, stmt = x.display_match_results(post_dict['num_res'], post_dict)
-    s_val = regex_matches.to_match
+    s_val = _regex_matches.to_match
     s_list = []
     for item in s_val:
         s_list.append(item['match_type'])
@@ -407,7 +407,7 @@ def mon_upd():
         post_dict = {'num_res': 100, 'r_user': '', 'r_name': '',
                      'm_string': '', 'm_line': '', 'm_location': '', 'm_type': ''}
     x = db.DbOps(db_u, db_p, db_h, db_db)
-    s_val = regex_matches.to_match
+    s_val = _regex_matches.to_match
     s_list = []
     for item in s_val:
         s_list.append(item['match_type'])

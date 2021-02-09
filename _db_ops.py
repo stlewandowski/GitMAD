@@ -10,7 +10,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.sql.expression import join
 from sqlalchemy import desc
 from sqlalchemy.sql import and_, or_, not_
-import conf
+import _conf
 import datetime
 import configparser
 import json
