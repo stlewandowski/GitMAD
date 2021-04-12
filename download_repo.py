@@ -22,8 +22,9 @@ class DownloadRepo:
         repo_size_dict = {}
 
         size_url = 'https://api.github.com/repos/'
-        for item in self.results_dict['items']:
-            full_name_set.add(item['repository']['full_name'])
+        if self.results_dict.get('items'):
+            for item in self.results_dict['items']:
+                full_name_set.add(item['repository']['full_name'])
         full_name_list = list(full_name_set)
 
         for item in full_name_list:
