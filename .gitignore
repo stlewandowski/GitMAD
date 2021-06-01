@@ -1,4 +1,5 @@
 conf.ini
 email_conf.ini
 .idea/
+venv/
 notes
