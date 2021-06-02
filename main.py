@@ -1,24 +1,24 @@
 #!/usr/bin/python3
 
-import _github_search as gs
-import _download_repo as dr
-import _directory_search as ds
+import github_search as gs
+import download_repo as dr
+import directory_search as ds
 import time
 import datetime
-import _conf
+import conf
 import base64
 import os
 import configparser
 import sys
 import argparse
-import _web_home as wh
+import web_home as wh
 
 
 class RunProgram:
     """Main driver for GitMAD, pulling all other parts together to run here."""
     def __init__(self, query, email, logging, res_per_pull, max_repo_size, ent, entropy_amt=4):
         """Initialize class, set variables, and populate config files."""
-        c = _conf.Configure()
+        c = conf.Configure()
         conf_file, file_check = c.check_for_file(c.c_filename)
         pxy, db_u, db_p, db_h, db_db, g_u, g_p, d = c.populate_credentials(conf_file, file_check)
         if email == 1:

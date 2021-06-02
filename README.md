@@ -155,7 +155,7 @@ pip3 install -r requirements.txt
 ### 3) Add script to MySQL:
 ```
 $sudo mysql -u username -p
-mysql> source /<path-to-gitmad>/GitMAD/_github_search_db.sql
+mysql> source /<path-to-gitmad>/GitMAD/github_search_db.sql
 ```
 
 ### 4) Run main.py and on first run enter configuration information:

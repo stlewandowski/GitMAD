@@ -5,13 +5,13 @@ import re
 import json
 import sys
 import hashlib
-import _db_ops as database
-import _find_entropy as fe
+import db_ops as database
+import find_entropy as fe
 import zipfile
 import datetime
-import _email_alert as ea
-import _conf
-import _regex_matches as rm
+import email_alert as ea
+import conf
+import regex_matches as rm
 
 
 class DirectorySearch:
@@ -206,7 +206,7 @@ class DirectorySearch:
 
     def iterate_thru_repos(self):
         """Driver for this class, to put other functions together, search, and generate results.
-        
+
         In addition, this will email results (if enabled) as well as insert them into the database.
         """
         dbc = database.DbOps(self.db_user, self.db_pw, self.db_host, self.db_database)
@@ -235,7 +235,7 @@ class DirectorySearch:
                     if total_list[item]["Type"] == "Query Match":
                         email_body.append(total_list[item])
                 zip_path = self.write_files(total_list)
-                c = _conf.Configure()
+                c = conf.Configure()
                 e_conf_file, e_file_check = c.check_for_file(c.e_filename)
                 e_from, e_to, e_domain, e_port, e_pw = c.populate_email_credentials(e_conf_file, e_file_check)
                 e_alert = ea.EmailAction(e_from, e_to, e_domain, e_port, e_pw)
@@ -247,8 +247,8 @@ class DirectorySearch:
 if __name__ == "__main__":
     if len(sys.argv) != 3:
         print('Error: Incorrect syntax')
-        print('Ex: C:\> python _directory_search.py <full path> <directory>')
-        print(r'Ex: C:\> python _directory_search.py C:\Users\<user>\Downloads DirToSearch')
+        print('Ex: C:\> python directory_search.py <full path> <directory>')
+        print(r'Ex: C:\> python directory_search.py C:\Users\<user>\Downloads DirToSearch')
         sys.exit()
 
     search_dir = sys.argv[1]

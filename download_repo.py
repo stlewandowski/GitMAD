@@ -4,7 +4,7 @@ import requests
 from collections import OrderedDict
 import datetime
 import time # for testing of the repo dict (can remove)
-import _conf
+import conf
 
 class DownloadRepo:
     """Class to download repositories if they meet a certain criteria."""

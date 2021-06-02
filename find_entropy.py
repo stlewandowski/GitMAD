@@ -3,12 +3,12 @@
 import math
 from collections import Counter
 import re
-import _entropy_whitelist as ew
+import entropy_whitelist as ew
 
 class GetEntropy:
     """Class to calculate entropy from a given input."""
     def __init__(self, in_line, entropy_level):
-        """Initialize class and set variables."""        
+        """Initialize class and set variables."""
         self.ent_level = entropy_level
         self.line = in_line
 
@@ -19,7 +19,7 @@ class GetEntropy:
 
     def enum_entropy(self):
         """Use find_entropy() function to calculate entropy.
-        
+
         Input is the line of the file, broken up via different characters listed below.
         """
         ent_wordlist = []
